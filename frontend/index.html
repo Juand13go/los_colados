@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Candidato</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <img src="https://www.disruptiveinfotech.com/images/logo.png" alt="Logo Disruptive" class="logo">
+        <form id="candidateForm">
+            <label>Nombre: <input type="text" name="firstName" required></label>
+            <label>Apellido: <input type="text" name="lastName" required></label>
+            <label>Género: 
+                <select name="gender" required>
+                    <option value="masculino">Masculino</option>
+                    <option value="femenino">Femenino</option>
+                    <option value="otro">Otro</option>
+                </select>
+            </label>
+            <label>Fecha de Nacimiento: <input type="date" name="birthDate" required></label>
+            <label>Correo Electrónico: <input type="email" name="email" required></label>
+            <label>Telefono:<input type="tel" name="phoneNumber" pattern="[0-9+\- ]{7,15}" placeholder="Ej: +573116347499"></label>
+            <label for="educationLevel">Nivel de Educación:>
+            <select id="educationLevel" name="educationLevel">
+                <option value="secundaria">Secundaria</option>
+                <option value="tecnico">Técnico</option>
+                <option value="tecnologo">Tecnólogo</option>
+                <option value="universitario">Universitario</option>    
+                <option value="postgrado">Postgrado</option>
+            </select>
+            </label>            
+            <label>Habilidades Técnicas: <input type="text" name="technicalSkills" placeholder="Separadas por coma" required></label>
+            <label>Puntaje de Entrevista: <input type="number" name="interviewScore" min="1" max="10" step="0.1" required></label>
+            <label>Puntaje de Prueba Técnica: <input type="number" name="technicalTestScore" min="0" max="100" required></label>
+            <label>Disponibilidad: <input type="text" name="availability" required></label>
+            <label>Expectativa Salarial: <input type="number" name="salaryExpectation" min="30000" max="120000" step="0.01" required></label>
+            <label>Interés en la Empresa: 
+                <select name="companyInterest" required>
+                    <option value="low">Bajo</option>
+                    <option value="medium">Medio</option>
+                    <option value="high">Alto</option>
+                </select>
+            </label>
+            <label>Ubicación: <input type="text" name="location" required></label>
+            <label>Experiencia (años): <input type="number" name="experience" min="0" max="20" required></label>
+            <label>Habilidades Blandas: <input type="text" name="softSkills" placeholder="Separadas por coma" required></label>
+            <label>Preferencia de Trabajo: 
+                <select name="workPreference" required>
+                    <option value="remoto">Remoto</option>
+                    <option value="hibrido">Híbrido</option>
+                    <option value="presencial">Presencial</option>
+                </select>
+            </label>
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html> 
