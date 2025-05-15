@@ -1,34 +1,42 @@
+document.addEventListener('DOMContentLoaded', function () {
+    const allSelects = document.querySelectorAll('select');
+    allSelects.forEach(select => {
+        new Choices(select, {
+            removeItemButton: select.multiple,
+            placeholderValue: 'Selecciona una opción',
+            searchEnabled: false
+        });
+    });
+});
+
+
 document.getElementById("candidateForm").addEventListener("submit", async function (event) {
     event.preventDefault();
 
     const formData = new FormData(this);
     let isValid = true;
 
-    // Mapeo de nivel educativo
-    const educationMap = {"secundaria": 1, "tecnico": 2, "tecnologo": 3, "universitario": 4, "postgrado": 5};
+    const educationMap = { "secundaria": 1, "tecnico": 2, "tecnologo": 3, "universitario": 4, "postgrado": 5 };
     if (formData.get("educationLevel")) {
         formData.set("educationLevel", educationMap[formData.get("educationLevel")] || 0);
     }
-    
-    // Limpia mensajes de error previos
+
     document.querySelectorAll(".error-message").forEach(msg => msg.remove());
     document.querySelectorAll(".input-field").forEach(field => field.classList.remove("error"));
 
     function showError(inputName, message) {
         const inputElement = document.querySelector(`[name="${inputName}"]`);
-        
         if (!inputElement) {
             console.error(`No se encontró el campo: ${inputName}`);
             return;
         }
-    
         const errorText = document.createElement("p");
         errorText.classList.add("error-message");
         errorText.style.color = "red";
         errorText.style.fontSize = "12px";
         errorText.style.marginTop = "5px";
         errorText.textContent = message;
-    
+
         const inputContainer = inputElement.closest(".input-field") || inputElement.parentElement;
         if (inputContainer) {
             inputContainer.appendChild(errorText);
@@ -38,7 +46,6 @@ document.getElementById("candidateForm").addEventListener("submit", async functi
         }
     }
 
-    // Validaciones del formulario
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.get("email"))) {
         showError("email", "Ingrese un correo electrónico válido.");
         isValid = false;
@@ -74,15 +81,9 @@ document.getElementById("candidateForm").addEventListener("submit", async functi
         isValid = false;
     }
 
-    if (!formData.get("technicalSkills")) {
-        showError("technicalSkills", "Debe ingresar al menos una habilidad técnica.");
+    if (!formData.getAll("technicalSkills").length) {
+        showError("technicalSkills", "Debe seleccionar al menos una habilidad técnica.");
         isValid = false;
-    } else {
-        let skills = formData.get("technicalSkills").split(",").map(skill => skill.trim());
-        if (skills.some(skill => skill.length > 20)) {
-            showError("technicalSkills", "Cada habilidad técnica debe tener menos de 20 caracteres.");
-            isValid = false;
-        }
     }
 
     if (isNaN(parseFloat(formData.get("interviewScore"))) || parseFloat(formData.get("interviewScore")) < 0 || parseFloat(formData.get("interviewScore")) > 10) {
@@ -105,11 +106,6 @@ document.getElementById("candidateForm").addEventListener("submit", async functi
         isValid = false;
     }
 
-    if (!formData.get("companyInterest")) {
-        showError("companyInterest", "Debe seleccionar un nivel de interés en la empresa.");
-        isValid = false;
-    }
-    
     if (!formData.get("location")) {
         showError("location", "Debe ingresar una ubicación.");
         isValid = false;
@@ -120,9 +116,19 @@ document.getElementById("candidateForm").addEventListener("submit", async functi
         isValid = false;
     }
 
-    if (!formData.get("softSkills")) {
-        showError("softSkills", "Debe ingresar al menos una habilidad blanda.");
+    if (isNaN(parseInt(formData.get("icfes"))) || parseInt(formData.get("icfes")) < 0 || parseInt(formData.get("icfes")) > 500) {
+    showError("icfes", "Ingrese un puntaje ICFES válido (0-500).");
+    isValid = false;
+    }
+
+    if (!formData.getAll("softSkills").length) {
+        showError("softSkills", "Debe seleccionar al menos una habilidad blanda.");
         isValid = false;
+    }
+
+    if (!formData.getAll("languages").length) {
+    showError("languages", "Debe seleccionar al menos un idioma.");
+    isValid = false;
     }
 
     if (!formData.get("workPreference")) {
@@ -130,15 +136,25 @@ document.getElementById("candidateForm").addEventListener("submit", async functi
         isValid = false;
     }
 
-    // Si no hay errores, envía la solicitud al servidor
+    if (!formData.getAll("personalStrengths").length) {
+        showError("personalStrengths", "Debe seleccionar al menos una fortaleza personal.");
+        isValid = false;
+    }
+
     if (isValid) {
         const data = Object.fromEntries(formData.entries());
-        data.technicalSkills = data.technicalSkills.split(",").map(skill => skill.trim());
-        data.softSkills = data.softSkills.split(",").map(skill => skill.trim());
         data.interviewScore = parseFloat(data.interviewScore);
         data.technicalTestScore = parseInt(data.technicalTestScore);
         data.salaryExpectation = parseFloat(data.salaryExpectation);
         data.experience = parseInt(data.experience);
+        data.technicalSkills = formData.getAll("technicalSkills");
+        data.softSkills = formData.getAll("softSkills");
+        data.personalStrengths = formData.getAll("personalStrengths");
+        data.languages = formData.getAll("languages");
+        data.careerInterest = formData.get("careerInterest");
+        data.shortTermGoal = formData.get("shortTermGoal");
+        data.icfes = parseInt(formData.get("icfes"));
+
 
         try {
             const response = await fetch("http://localhost:5000/add_candidate", {
@@ -162,8 +178,38 @@ document.getElementById("candidateForm").addEventListener("submit", async functi
     }
 });
 
-const formData = new FormData(document.querySelector("form"));
-console.log("Valor educationLevel antes de enviar:", formData.get("educationLevel"));
+function showBackendErrors(errorMessage) {
+    alert("⚠️ Error del servidor: " + errorMessage);
+    console.error("Backend error:", errorMessage);
+}
 
+document.getElementById("showBestCandidate").addEventListener("click", async function () {
+    const clave = prompt("🔐 Ingresa la clave de acceso:");
 
+    if (clave !== "disruptive123") {
+        alert("❌ Clave incorrecta");
+        return;
+    }
+
+    try {
+        const response = await fetch("http://localhost:5000/mejor_candidato");
+        const result = await response.json();
+
+        if (response.ok) {
+            const mejor = result.mejor_candidato;
+            const container = document.getElementById("bestCandidateResult");
+            container.innerHTML = `
+                <h3>🏆 Mejor Candidato</h3>
+                <p><strong>Nombre:</strong> ${mejor.first_name} ${mejor.last_name}</p>
+                <p><strong>Correo:</strong> ${mejor.email}</p>
+                <p><strong>Puntaje total:</strong> ${mejor.total_score.toFixed(2)}</p>
+            `;
+        } else {
+            alert("Error al obtener candidato: " + result.error);
+        }
+    } catch (err) {
+        alert("⚠️ No se pudo conectar con el servidor.");
+        console.error(err);
+    }
+});
 

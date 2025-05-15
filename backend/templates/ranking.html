@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ranking de Candidatos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 30px 20px 10px;
+            font-size: 28px;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
+            width: 95%;
+            max-width: 1000px;
+            margin: 0 auto 40px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            color: #fff;
+        }
+
+        th, td {
+            border: 1px solid #ffffff44;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        tr:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        #loader {
+            text-align: center;
+            padding: 15px;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <table>
+            <h1>🏆 Ranking de Candidatos</h1>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Experiencia</th>
+                    <th>Salario</th>
+                    <th>Puntaje Total</th>
+                </tr>
+            </thead>
+            <tbody id="rankingBody">
+                {% for c in candidates %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ c.first_name }} {{ c.last_name }}</td>
+                    <td>{{ c.email }}</td>
+                    <td>{{ c.experience }}</td>
+                    <td>${{ '{:,.0f}'.format(c.salary_expectation|float) }}</td>
+                    <td>{{ '{:.2f}'.format(c.total_score|float) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div id="loader" style="display: none;">Cargando más candidatos...</div>
+        <a href="/">
+            <button type="button">Volver al inicio</button>
+        </a>
+    </div>
+</body>
+
+<script>
+let currentPage = 2; // Página 1 ya fue cargada por Flask
+let loading = false;
+let totalPages = null;
+
+async function loadRankingPage(page) {
+    if (loading) return;
+    loading = true;
+    document.getElementById("loader").style.display = "block";
+
+    try {
+        const res = await fetch(/api/ranking?page=${page});
+        const data = await res.json();
+
+        totalPages = data.total_pages;
+        const tbody = document.getElementById("rankingBody");
+
+        data.candidates.forEach((c, idx) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${(page - 1) * 50 + idx + 1}</td>
+                <td>${c.first_name} ${c.last_name}</td>
+                <td>${c.email}</td>
+                <td>${c.experience}</td>
+                <td>$${parseFloat(c.salary_expectation).toLocaleString()}</td>
+                <td>${parseFloat(c.total_score).toFixed(2)}</td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        currentPage++;
+    } catch (err) {
+        console.error("Error al cargar más datos:", err);
+    } finally {
+        loading = false;
+        document.getElementById("loader").style.display = "none";
+    }
+}
+
+// Scroll infinito
+window.addEventListener("scroll", () => {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200) {
+        if (!totalPages || currentPage <= totalPages) {
+            loadRankingPage(currentPage);
+        }
+    }
+});
+</script>
+</html>
