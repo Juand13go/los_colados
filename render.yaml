@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: dataframe-disruptive-backend
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: "pip install -r backend/requirements.txt"
+    startCommand: "python backend/app.py"
+    envVars:
+      - key: APPWRITE_ENDPOINT
+        value: https://cloud.appwrite.io/v1
+      - key: APPWRITE_PROJECT_ID
+        value: 67d4a5850019056915ff
+      - key: APPWRITE_API_KEY
+        value: standard_8250e28b70a7a2968caa30344d1b90317b1bc389909828818beb998006c1696f4748d526c23297cc3b3c58c417abf510be9041500e41ac7a8550d4ad619d4b399fe5216da93d27246944cd5c3c5a60d5a1a5aec08c9aaf156416bc3b82a1c8b6f8fe4ea22785a59160639591aadb43123b45ee546d946e8765266f2b6b662a5a
+      - key: DATABASE_ID
+        value: 67d4a5cc0001d91a7e15
+      - key: COLLECTION_ID
+        value: 67d4ac5b0030d17a2b72
