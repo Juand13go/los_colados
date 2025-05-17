@@ -6,7 +6,7 @@ from appwrite.id import ID
 from dotenv import load_dotenv
 # from ranking_utils import rank_candidates, DATA_PATH
 from backend.ranking_utils import rank_candidates, DATA_PATH
-from generate_data import sync_csv_with_appwrite
+from backend.generate_data import sync_csv_with_appwrite
 from os.path import join, dirname
 import os
 import traceback
