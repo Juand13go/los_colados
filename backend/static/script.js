@@ -13,7 +13,9 @@ document.addEventListener('DOMContentLoaded', function () {
 document.getElementById("candidateForm").addEventListener("submit", async function (event) {
     event.preventDefault();
 
-    const BASE_URL = "https://los-colados.onrender.com";
+    const BASE_URL = window.location.hostname.includes("localhost")
+    ? "http://localhost:5000"
+    : "https://los-colados.onrender.com";
     const formData = new FormData(this);
     let isValid = true;
 
