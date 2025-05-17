@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Administrador</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>🔒 Panel de Administrador</h1>
+
+    <div class="admin-buttons">
+        <button onclick="generarDatos()">📦 Generar Datos</button>
+        <button onclick="location.href='/ranking'">🏆 Ver Ranking</button>
+        <button onclick="location.href='/eda'">📊 Ver EDA</button> <!-- si ya creas la ruta -->
+    </div>
+
+    <script>
+        const BASE_URL = window.location.hostname.includes("localhost") ? "http://localhost:5000" : "https://los-colados.onrender.com";
+
+        function generarDatos() {
+            if (!confirm("¿Generar 10 nuevos candidatos con Faker?")) return;
+            fetch(`${BASE_URL}/generar_datos`, { method: "POST" })
+                .then(res => res.json())
+                .then(data => alert(data.message || "✅ Generados"))
+                .catch(err => alert("⚠️ Error al generar datos"));
+        }
+    </script>
+</body>
+</html>

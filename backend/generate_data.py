@@ -155,8 +155,10 @@ def sync_csv_with_appwrite():
         import traceback
         print("❌ Error al sincronizar CSV:", traceback.format_exc())
 
-
-if __name__ == "__main__":
+def generate_and_sync(n=10):
     generate_fake_candidates(n=10)
     sync_csv_with_appwrite()
+
+if __name__ == "__main__":
+    generate_and_sync(n=10)
 

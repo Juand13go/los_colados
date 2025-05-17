@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from ranking_utils import rank_candidates, DATA_PATH
 from generate_data import sync_csv_with_appwrite
 from os.path import join, dirname
+from generate_data import generate_and_sync
 import os
 import traceback
 import csv
@@ -208,6 +209,20 @@ def ranking_page():
     except Exception as e:
         return f"<h1>Error al cargar ranking</h1><p>{e}</p>"
     
+@app.route("/generar_datos", methods=["POST"])
+def generar_datos():
+    try:
+        generate_and_sync(n=10)  # puedes cambiar el 10 por el número deseado
+        return jsonify({"message": "✅ Datos generados correctamente"}), 200
+    except Exception as e:
+        return jsonify({"error": f"❌ Error al generar datos: {str(e)}"}), 500
+
+
+@app.route("/admin")
+def admin_page():
+    return render_template("admin.html")
+
+
 @app.route("/api/ranking")
 def api_ranking():
     try:
