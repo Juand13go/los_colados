@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
 document.getElementById("candidateForm").addEventListener("submit", async function (event) {
     event.preventDefault();
 
-    const BASE_URL = window.location.hostname.includes("localhost")
+    const BASE_URL = window.location.hostname.includes("localhost") || window.location.hostname.includes("127.")
     ? "http://localhost:5000"
     : "https://los-colados.onrender.com";
     const formData = new FormData(this);
