@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gráficos del EDA</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            /* background-color: #f9f9f9; */
+            margin: 0;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 40px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .plot-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        img {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        h3 {
+            margin: 12px 0 0;
+        }
+
+        .back {
+            display: block;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .back a {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+
+        .back a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>📈 Visualizaciones del EDA</h1>
+
+    <div class="grid">
+        {% for plot in plots %}
+        <div class="plot-card">
+            <img src="{{ url_for('static', filename='plots/' + plot) }}" alt="{{ plot }}">
+            <h3>{{ plot.replace('_', ' ').replace('.png', '').title() }}</h3>
+        </div>
+        {% endfor %}
+    </div>
+    <button id="updatePlotsBtn" >📊 Actualizar Plots</button>
+    <div class="back">
+        <a href="/eda">⬅️ Volver al resumen</a>
+    </div>
+</body>
+<script>
+document.getElementById("updatePlotsBtn")?.addEventListener("click", async () => {
+    const confirmacion = confirm("¿Deseas regenerar las gráficas del EDA?");
+    if (!confirmacion) return;
+
+    try {
+        const resp = await fetch("/actualizar_plots", { method: "POST" });
+        const data = await resp.json();
+        if (resp.ok) {
+            alert(data.message);
+
+            // 🔁 Forzar actualización de cada imagen con timestamp
+            document.querySelectorAll(".plot-card img").forEach((img) => {
+                const src = img.getAttribute("src").split("?")[0];
+                img.setAttribute("src", `${src}?v=${new Date().getTime()}`);
+            });
+
+        } else {
+            alert("⚠️ " + data.error);
+        }
+    } catch (err) {
+        alert("❌ No se pudo conectar con el servidor.");
+        console.error(err);
+    }
+});
+</script>
+
+</html>

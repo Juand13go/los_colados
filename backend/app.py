@@ -8,6 +8,8 @@ from ranking_utils import rank_candidates, DATA_PATH
 from generate_data import sync_csv_with_appwrite
 from os.path import join, dirname
 from generate_data import generate_and_sync
+from appwrite.query import Query 
+from eda import run_generate_plots
 import os
 import traceback
 import csv
@@ -136,6 +138,8 @@ def add_candidate():
         )
 
         sync_csv_with_appwrite()
+        actualizar_puntaje_total_csv()
+        run_generate_plots()
 
 
         return jsonify({"message": "Candidato agregado", "document": document}), 201
@@ -207,15 +211,19 @@ def ranking_page():
         top_candidates = df.head(10).to_dict(orient="records") # solo modificar el parentesis en caso de querer ver mas candidatos
         return render_template("ranking.html", candidates=top_candidates)
     except Exception as e:
-        return f"<h1>Error al cargar ranking</h1><p>{e}</p>"
-    
+        return f"<h1>Error al cargar ranking</h1><p>{e}</p>" 
+
 @app.route("/generar_datos", methods=["POST"])
 def generar_datos():
     try:
-        generate_and_sync(n=10)  # puedes cambiar el 10 por el número deseado
-        return jsonify({"message": "✅ Datos generados correctamente"}), 200
+        generate_and_sync(n=10)         # 1. Generar e insertar candidatos
+        sync_csv_with_appwrite()        # 2. Traer datos actualizados de Appwrite
+        actualizar_puntaje_total_csv()  # 3. Calcular puntaje y ordenar ranking
+        run_generate_plots()
+        return jsonify({"message": "✅ Datos generados y ranking actualizado"}), 200
     except Exception as e:
         return jsonify({"error": f"❌ Error al generar datos: {str(e)}"}), 500
+
 
 
 @app.route("/admin")
@@ -244,6 +252,95 @@ def api_ranking():
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route("/actualizar_ranking", methods=["GET"])
+def actualizar_ranking():
+    try:
+        sync_csv_with_appwrite()        # 1. Descargar últimos datos desde Appwrite
+        actualizar_puntaje_total_csv()  # 2. Calcular puntaje_total y reordenar
+        run_generate_plots()
+        print("✅ Ranking actualizado correctamente.")
+        return jsonify({"message": "Ranking actualizado correctamente"}), 200
+    except Exception as e:
+        print(f"❌ Error al actualizar el ranking: {str(e)}")
+        return jsonify({"error": "Error al actualizar el ranking", "details": str(e)}), 500
+
+def actualizar_puntaje_total_csv():
+    import pandas as pd
+
+    df = pd.read_csv(DATA_PATH)
+    df["puntaje_total"] = (
+        df["interview_score"] * 0.4 +
+        df["technical_test_score"] * 0.4 +
+        df["soft_skills"].apply(lambda x: len(x) if isinstance(x, list) else 0) * 0.2
+    )
+    df = df.sort_values(by="puntaje_total", ascending=False)
+    df.to_csv(DATA_PATH, index=False)
+    print("✅ puntaje_total actualizado en candidatos.csv")
+
+
+@app.route("/actualizar_plots", methods=["POST"])
+def actualizar_plots():
+    try:        
+        sync_csv_with_appwrite()
+        actualizar_puntaje_total_csv()
+        run_generate_plots()
+        print("✅ Plots actualizados con éxito")
+        return jsonify({"message": "✅ Plots actualizados con éxito"}), 200
+    except Exception as e:
+        return jsonify({"error": f"❌ Error al actualizar plots: {str(e)}"}), 500
+
+
+@app.route("/eda")
+def eda_summary():
+    import eda  # asegúrate de tener eda.py en el mismo nivel que app.py
+    head, types, missing, describe = eda.get_eda_dataframes()
+
+    return render_template("eda.html", head=head.to_dict(orient="records"),
+                                         types=types.to_dict(orient="records"),
+                                         missing=missing.to_dict(orient="records"),
+                                         describe=describe.to_dict(orient="records"))
+
+
+@app.route("/eda/plots")
+def eda_plots():
+    plot_files = os.listdir(os.path.join(app.static_folder, "plots"))
+    plot_files = [f for f in plot_files if f.endswith(".png")]
+    return render_template("eda_plots.html", plots=plot_files)
+
+
+@app.route("/verificar_existencia", methods=["POST"])
+def verificar_existencia():
+    try:
+        data = request.get_json()
+        email = data.get("email")
+        phone = data.get("phoneNumber")
+
+        queries = []
+        if email:
+            queries.append(Query.equal("email", email))
+        if phone:
+            queries.append(Query.equal("phone_number", phone))
+
+        existing_docs = database.list_documents(
+            database_id=database_id,
+            collection_id=collection_id,
+            queries=queries
+        )
+
+        emailExiste = any(doc.get("email") == email for doc in existing_docs["documents"])
+        telefonoExiste = any(doc.get("phone_number") == phone for doc in existing_docs["documents"])
+
+        return jsonify({
+            "emailExiste": emailExiste,
+            "telefonoExiste": telefonoExiste
+        })
+
+    except Exception as e:
+        print(f"❌ Error al verificar existencia: {e}")
+        return jsonify({"error": "Error al verificar existencia"}), 500
+
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

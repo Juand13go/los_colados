@@ -16,8 +16,8 @@
         <form id="candidateForm">
             <label>Nombre: <input type="text" name="firstName" required></label>
             <label>Apellido: <input type="text" name="lastName" required></label>
-            <label>Género: 
-                <select name="gender" required>
+            <label for="gender">Género: 
+                <select name="gender" id="gender" required>
                     <option value="masculino">Masculino</option>
                     <option value="femenino">Femenino</option>
                     <option value="otro">Otro</option>
@@ -26,7 +26,7 @@
             <label>Fecha de Nacimiento: <input type="date" name="birthDate" required></label>
 
             <label>Correo Electrónico: <input type="email" name="email" required></label>
-            <label>Teléfono: <input type="tel" name="phoneNumber" pattern="[0-9+\- ]{7,15}" placeholder="Ej: +573116347499"></label>
+            <label>Teléfono: <input type="tel" name="phoneNumber" pattern="[0-9+\- ]{7,15}" placeholder="Ej: +573116347499" required></label>
             <label>Ubicación: <input type="text" name="location" required></label>
 
             <label for="educationLevel">Nivel de Educación:
@@ -147,7 +147,6 @@
 
             <label>Áreas de Interés Profesional:
                 <select name="careerInterest" required>
-                    <option value="">Selecciona una opción</option>
                     <option value="backend">Desarrollo Backend</option>
                     <option value="frontend">Desarrollo Frontend</option>
                     <option value="datascience">Ciencia de Datos</option>
@@ -159,7 +158,6 @@
 
             <label>Objetivo Profesional a Corto Plazo:
                 <select name="shortTermGoal" required>
-                    <option value="">Selecciona un objetivo</option>
                     <option value="lider_equipo">Ser líder de equipo</option>
                     <option value="especialista">Especializarme técnicamente</option>
                     <option value="cambio_area">Explorar otra área</option>
@@ -171,17 +169,7 @@
             <button type="submit">Enviar</button>
             </form>
 
-        <button id="adminAccessBtn">🔧 Panel de Administrador</button>
-
-        <!-- <button id="generateDataBtn" type="button" style="margin-top: 20px;">
-            🛠️ Generar datos con Faker
-        </button>
-
-        
-        <a href="/ranking">
-            <button type="button">Ver ranking de candidatos</button>
-        </a>
-        <div id="bestCandidateResult" style="margin-top: 20px;"></div> -->
+            <button id="adminAccessBtn" >🔧 Panel de Administrador</button>
     </div>
     <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </body>

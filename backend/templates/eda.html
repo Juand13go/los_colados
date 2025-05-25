@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Resumen de Análisis Exploratorio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.85);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            width: 95%;
+            max-width: 1100px;
+            margin: 0 auto 40px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 30px;
+        }
+
+        h2 {
+            margin-top: 40px;
+            margin-bottom: 10px;
+            font-size: 22px;
+            border-left: 6px solid #00e6aa;
+            padding-left: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            color: #fff;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ffffff33;
+            text-align: left;
+        }
+
+        th {
+            background-color: #333;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        .btn-edaplots {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 10px 20px;
+            background: #00e6aa;
+            border-radius: 6px;
+            color: black;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
+        .btn-edaplots:hover {
+            background: #00b88b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 Resumen de Análisis Exploratorio</h1>
+
+        <h2>🔍 Primeros registros</h2>
+        <table>
+            <tr>
+                {% for key in head[0].keys() %}
+                    <th>{{ key }}</th>
+                {% endfor %}
+            </tr>
+            {% for row in head %}
+                <tr>
+                    {% for value in row.values() %}
+                        <td>{{ value }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+
+        <h2>📁 Tipos de Datos</h2>
+        <table>
+            <tr>
+                <th>Columna</th>
+                <th>Tipo</th>
+            </tr>
+            {% for row in types %}
+            <tr>
+                <td>{{ row['Columna'] }}</td>
+                <td>{{ row['Tipo'] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <h2>🚨 Valores Nulos</h2>
+        <table>
+            <tr>
+                <th>Columna</th>
+                <th>Nulos</th>
+            </tr>
+            {% for row in missing %}
+            <tr>
+                <td>{{ row['Columna'] }}</td>
+                <td>{{ row['Nulos'] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <h2>📊 Estadísticas descriptivas</h2>
+        <table>
+            <tr>
+                {% for key in describe[0].keys() %}
+                    <th>{{ key }}</th>
+                {% endfor %}
+            </tr>
+            {% for row in describe %}
+                <tr>
+                    {% for value in row.values() %}
+                        <td>{{ value }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+
+        <div style="text-align: center;">
+            <a class="btn-edaplots" href="/eda/plots">📈 Ver gráficas del EDA</a>
+        </div>                    
+        <button id="adminAccessBtn" onclick="window.location.href='/admin'"
+        style="background: #00e6aa; color: black; padding: 10px 18px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;"             >
+        🔧 Panel de Administrador
+        </button>
+
+
+    </div>
+</body>
+<script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</html>

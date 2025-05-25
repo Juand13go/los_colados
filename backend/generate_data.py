@@ -62,7 +62,7 @@ def generate_fake_candidates(n=1):
                 "email": fake.unique.email().lower(),
                 "phone_number": "+57" + fake.numerify(text='3#########'),
                 "gender": str(gender[1]),
-                "birth_date": fake.date_of_birth(minimum_age=18, maximum_age=45).isoformat(),
+                "birth_date": fake.date_of_birth(minimum_age=18).isoformat(),
                 "education_level": str(education[1]),
                 "technical_skills": random.sample(TECH_SKILLS, k=random.randint(3, 6)),
                 "interview_score": round(random.uniform(1.0, 10.0), 1),

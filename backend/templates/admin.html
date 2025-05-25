@@ -4,15 +4,90 @@
     <meta charset="UTF-8">
     <title>Panel de Administrador</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.85);
+            padding: 40px 30px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
+            width: 95%;
+            max-width: 700px;
+            margin: 40px auto;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 30px;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 14px 20px;
+            margin: 15px 0;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+            
+        }
+
+        .btn-green {
+            background-color: #c70039;
+            color: white;
+        }
+
+        .btn-blue {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-purple {
+            background-color: green;
+            color: white;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+    </style>
 </head>
 <body>
-    <h1>🔒 Panel de Administrador</h1>
+    <div class="container">
+        <h1>🔒 Panel de Administrador</h1>
 
-    <div class="admin-buttons">
-        <button onclick="generarDatos()">📦 Generar Datos</button>
-        <button onclick="location.href='/ranking'">🏆 Ver Ranking</button>
-        <button onclick="location.href='/eda'">📊 Ver EDA</button> <!-- si ya creas la ruta -->
+        <button class="btn-green" onclick="generarDatos()">📦 Generar Datos con Faker</button>
+
+        <a href="/ranking">
+            <button class="btn-blue">🏆 Ver Ranking de Candidatos</button>
+        </a>
+
+        <a href="/eda">
+            <button class="btn-purple">📊 Ver Análisis Exploratorio de Datos (EDA)</button>
+        </a>
+        <br>
+        <a href="/">
+            <button type="button" style="padding: 14px 16px; background-color:#6f42c1; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                Volver al inicio
+            </button>
+        </a>
     </div>
+
 
     <script>
         const BASE_URL = window.location.hostname.includes("localhost") ? "http://localhost:5000" : "https://los-colados.onrender.com";

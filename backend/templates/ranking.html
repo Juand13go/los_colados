@@ -64,8 +64,8 @@
 </head>
 <body>
     <div class="container">
+        <h1>🏆 Ranking de Candidatos</h1>
         <table>
-            <h1>🏆 Ranking de Candidatos</h1>
             <thead>
                 <tr>
                     <th>#</th>
@@ -89,25 +89,43 @@
                 {% endfor %}
             </tbody>
         </table>
+        <div style="text-align: center; margin-top: 20px;">
+            <button onclick="actualizarRanking()" style="padding: 8px 16px; background-color: rgb(62, 110, 177); color: white; border: none; border-radius: 4px; cursor: pointer;">
+                🔁 Actualizar Ranking
+            </button>
+        </div>
+
         <div id="loader" style="display: none;">Cargando más candidatos...</div>
-        <a href="/">
-            <button type="button">Volver al inicio</button>
-        </a>
+
+        <div style="text-align: center; margin-top: 20px;">
+        <button id="adminAccessBtn" onclick="window.location.href='/admin'">🔧Volver al panel de administrador</button>
+        </div>
     </div>
+    
 </body>
 
 <script>
-let currentPage = 2; // Página 1 ya fue cargada por Flask
+let currentPage = 2;
 let loading = false;
 let totalPages = null;
 
+// Scroll infinito
+window.addEventListener("scroll", () => {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200) {
+        if (!totalPages || currentPage <= totalPages) {
+            loadRankingPage(currentPage);
+        }
+    }
+});
+
+// Cargar más datos del ranking
 async function loadRankingPage(page) {
     if (loading) return;
     loading = true;
     document.getElementById("loader").style.display = "block";
 
     try {
-        const res = await fetch(/api/ranking?page=${page});
+        const res = await fetch(`/api/ranking?page=${page}`);
         const data = await res.json();
 
         totalPages = data.total_pages;
@@ -135,13 +153,22 @@ async function loadRankingPage(page) {
     }
 }
 
-// Scroll infinito
-window.addEventListener("scroll", () => {
-    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200) {
-        if (!totalPages || currentPage <= totalPages) {
-            loadRankingPage(currentPage);
+// Función para actualizar el ranking y recargar
+async function actualizarRanking() {
+    try {
+        const res = await fetch("/actualizar_ranking");
+        const data = await res.json();
+
+        if (res.ok) {
+            alert(data.message || "✅ Ranking actualizado correctamente");
+            window.location.href = window.location.href; // Fuerza recarga total
+        } else {
+            alert("❌ Error: " + (data.details || "No se pudo actualizar el ranking"));
         }
+    } catch (error) {
+        alert("❌ Error de red o del servidor");
+        console.error(error);
     }
-});
+}
 </script>
 </html>
