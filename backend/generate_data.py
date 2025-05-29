@@ -45,7 +45,7 @@ SHORT_TERM_GOALS = ["lider_equipo", "especialista", "cambio_area", "crecer_empre
 
 GENDERS = [("masculino", 1), ("femenino", 2), ("otro", 3)]
 EDUCATION_LEVELS = [("secundaria", 1), ("tecnico", 2), ("tecnologo", 3), ("universitario", 4), ("postgrado", 5)]
-AVAILABILITY = [("inmediata", 1), ("15 dias", 2), ("30 dias", 3)]
+AVAILABILITY = [("completo", 1), ("parcial", 2), ("flexible", 3)]
 WORK_PREFERENCES = [("remoto", 1), ("hibrido", 2), ("presencial", 3)]
 
 def generate_fake_candidates(n=1):
@@ -143,7 +143,7 @@ def sync_csv_with_appwrite():
                 "career_interest": doc.get("career_interest", ""),
                 "personal_strengths": doc.get("personal_strengths", ""),
                 "icfes": doc.get("icfes", ""),
-                "short_term_goal": doc.get("short_term_goal", "")
+                "short_term_goal": doc.get("short_term_goal", ""),
             })
 
         df = pd.DataFrame(rows)

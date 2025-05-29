@@ -12,6 +12,18 @@
             padding: 30px;
         }
 
+        button {
+            margin-top: 20px;
+            padding: 12px;
+            background-color: white;
+            color: black;
+            border: none;
+            font-weight: bold;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
         h1 {
             text-align: center;
             color: #333;
@@ -73,8 +85,11 @@
         </div>
         {% endfor %}
     </div>
-    <button id="updatePlotsBtn" >📊 Actualizar Plots</button>
     <div class="back">
+        <button id="updatePlotsBtn" class="button" center>📊 Actualizar Plots</button>
+        <br>
+        <br>
+        <br>
         <a href="/eda">⬅️ Volver al resumen</a>
     </div>
 </body>

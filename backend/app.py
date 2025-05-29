@@ -67,9 +67,9 @@ def map_gender(gender):
 
 def map_availability(avail):
     availability_map = {
-        "inmediata": 1,
-        "15 dias": 2,
-        "30 dias": 3
+        "completo": 1,
+        "parcial": 2,
+        "flexible": 3
     }
     return availability_map.get(normalize_text(avail), 0)
 
@@ -121,7 +121,7 @@ def add_candidate():
             "career_interest": data.get("careerInterest", ""),
             "personal_strengths": data.get("personalStrengths", []),
             "short_term_goal": data.get("shortTermGoal", ""),
-            "icfes": data["icfes"]
+            "icfes": data["icfes"]            
 
         }
 
