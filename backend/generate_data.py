@@ -10,6 +10,7 @@ from appwrite_config import (
 )
 from appwrite.id import ID
 from appwrite.query import Query
+from export_powerbi import generate_powerbi_csv
 
 fake = Faker()
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -158,6 +159,7 @@ def sync_csv_with_appwrite():
 def generate_and_sync(n=10):
     generate_fake_candidates(n=10)
     sync_csv_with_appwrite()
+    generate_powerbi_csv()
 
 if __name__ == "__main__":
     generate_and_sync(n=10)

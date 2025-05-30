@@ -10,6 +10,7 @@ from os.path import join, dirname
 from generate_data import generate_and_sync
 from appwrite.query import Query 
 from eda import run_generate_plots
+from export_powerbi import generate_powerbi_csv
 import os
 import traceback
 import csv
@@ -139,6 +140,7 @@ def add_candidate():
 
         sync_csv_with_appwrite()
         actualizar_puntaje_total_csv()
+        generate_powerbi_csv()
         run_generate_plots()
 
 
@@ -218,6 +220,7 @@ def generar_datos():
     try:
         generate_and_sync(n=10)         # 1. Generar e insertar candidatos
         sync_csv_with_appwrite()        # 2. Traer datos actualizados de Appwrite
+        generate_powerbi_csv()
         actualizar_puntaje_total_csv()  # 3. Calcular puntaje y ordenar ranking
         run_generate_plots()
         return jsonify({"message": "✅ Datos generados y ranking actualizado"}), 200
@@ -340,7 +343,20 @@ def verificar_existencia():
         print(f"❌ Error al verificar existencia: {e}")
         return jsonify({"error": "Error al verificar existencia"}), 500
 
+@app.route("/descargar_powerbi")
+def descargar_powerbi():
+    # from export_powerbi import generate_powerbi_csv
+    # from flask import send_file
+    # import os
 
+    generate_powerbi_csv()
+
+    powerbi_csv = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "candidatos_powerbi.csv")
+
+    if not os.path.exists(powerbi_csv):
+        return "❌ El archivo candidatos_powerbi.csv no fue generado correctamente.", 500
+
+    return send_file(powerbi_csv, as_attachment=True)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
